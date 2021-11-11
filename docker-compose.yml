@@ -5,8 +5,8 @@ networks:
     driver: bridge
 
 volumes:
-    prometheus_data: {}
-    grafana_data: {}
+  prometheus_data: {}
+  grafana_data: {}
 
 services:
 
@@ -87,6 +87,22 @@ services:
     labels:
       org.label-schema.group: "monitoring"
 
+  blackbox_exporter:
+    image: prom/blackbox-exporter:v0.19.0
+    container_name: blackbox_exporter
+    privileged: true
+    networks:
+      - monitor-net
+    volumes:
+      - ./blackbox_exporter:/config
+    command:
+      - '--config.file=/config/blackbox.yml'
+    restart: unless-stopped
+    expose:
+      - 9115
+    labels:
+      org.label-schema.group: "monitoring"
+
   grafana:
     image: grafana/grafana:8.2.2
     container_name: grafana
@@ -117,6 +133,29 @@ services:
     labels:
       org.label-schema.group: "monitoring"
 
+  homework:
+    image: shmilyliang/homework:latest
+    container_name: homework
+    restart: unless-stopped
+    volumes:
+      - ./homework:/homework
+    expose:
+      - 8081
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
+  toolbox:
+    image: jkmart/docker-curl-jq:latest
+    container_name: toolbox
+    restart: unless-stopped
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+ 
+      
   caddy:
     image: caddy:2.3.0
     container_name: caddy
@@ -125,6 +164,8 @@ services:
       - "9090:9090"
       - "9093:9093"
       - "9091:9091"
+      - "8081:8081"
+      - "9115:9115"
     volumes:
       - ./caddy:/etc/caddy
     environment:

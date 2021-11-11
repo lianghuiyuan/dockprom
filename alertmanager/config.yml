@@ -1,5 +1,5 @@
 route:
-    receiver: 'slack'
+    receiver: 'gt_webhook'
 
 receivers:
     - name: 'slack'
@@ -9,3 +9,7 @@ receivers:
             username: 'Prometheus'
             channel: '#<channel-name>'
             api_url: 'https://hooks.slack.com/services/<webhook-id>'
+    - name: 'gt_webhook'
+      webhook_configs:
+          - send_resolved: true
+            url: "http://homework:8081/alertmanager/alerts/gt"

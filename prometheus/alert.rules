@@ -68,3 +68,13 @@ groups:
       summary: "Jenkins high memory usage"
       description: "Jenkins memory consumption is at {{ humanize $value}}."
 
+
+- name: website
+  rules:
+  - alert: website can not be reached!
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      description: "stuff's happening with {{ $labels.service }}"
